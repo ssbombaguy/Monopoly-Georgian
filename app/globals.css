@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-roast: #16100d;      /* page ground — dark roasted wood */
+  --color-felt: #4a1526;       /* board center — saperavi wine felt */
+  --color-parchment: #f4ecd9;  /* tiles, light text */
+  --color-ink: #2a2018;        /* text on parchment */
+  --color-gold: #d4a94b;       /* accent — georgian ornament gold */
+  --font-display: var(--font-serif-ka), serif;
+  --font-body: var(--font-sans-ka), sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+}
