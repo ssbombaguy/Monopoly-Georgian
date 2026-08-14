@@ -1,12 +1,14 @@
 'use client';
 import { TILES, GROUP_COLORS, rentFor } from '../lib/board';
+import { useGameStore } from '../store/gameStore';
+import { useGameSocket } from '../hooks/useGameSocket';
 
 const NEUTRAL = '#5c5148'; // rails and utilities have no colour group
 const LADDER = ['ქირა', '1 სახლი', '2 სახლი', '3 სახლი', '4 სახლი', 'სასტუმრო'];
 
 function Row({ label, value, highlight }) {
   return (
-    <div className={`flex justify-between gap-2 ${highlight ? 'rounded bg-gold/30 px-1 font-bold' : ''}`}>
+    <div className={`flex justify-between gap-2 ${highlight ? 'rounded bg-gold/30 px-1.5 py-0.5 font-bold' : ''}`}>
       <span className="truncate text-ink/60">{label}</span>
       <span className="shrink-0 font-mono">{value}</span>
     </div>
@@ -16,10 +18,14 @@ function Row({ label, value, highlight }) {
 // One title deed, used both for the street in play (full) and for the
 // holdings listed on each player card (compact).
 export default function TitleDeed({ index, room, compact = false, onClick }) {
+  const myId = useGameStore((s) => s.myId);
+  const { mortgageProperty, unmortgageProperty } = useGameSocket();
+
   const tile = TILES[index];
   if (!tile?.price) return null;
 
   const houses = room.houses?.[index] || 0;
+  const mortgaged = !!room.mortgaged?.[index];
   const owner = room.players.find((p) => p.id === room.properties[index]);
   // Guard on `owner` first: with no owner every group tile is undefined and
   // the comparison would pass vacuously, doubling rent on unowned streets.
@@ -27,6 +33,7 @@ export default function TitleDeed({ index, room, compact = false, onClick }) {
     !!owner && !!tile.group &&
     TILES.every((t, i) => t.group !== tile.group || room.properties[i] === owner.id);
   const currentRent = owner ? rentFor(room, index) : null;
+  const unmortgageCost = Math.ceil(tile.mortgage * 1.1);
 
   return (
     <div
@@ -34,22 +41,22 @@ export default function TitleDeed({ index, room, compact = false, onClick }) {
       className={`w-full overflow-hidden rounded-md border border-ink/30 bg-white shadow-lg ${onClick ? 'cursor-pointer' : ''}`}
     >
       <div
-        className="px-2 py-1 text-center"
+        className={`${compact ? 'px-2 py-1 text-center' : 'px-3 py-1.5 text-center'} ${mortgaged ? 'opacity-50' : ''}`}
         style={{ background: tile.group ? GROUP_COLORS[tile.group] : NEUTRAL }}
       >
         <div
-          className={`text-[10px] font-bold leading-tight ${tile.group ? 'text-ink' : 'text-white'}`}
+          className={`font-bold leading-tight ${compact ? 'text-[10px]' : 'text-xs'} ${tile.group ? 'text-ink' : 'text-white'}`}
         >
-          {tile.name}
+          {tile.name}{mortgaged ? ' · დაგირავებული' : ''}
         </div>
       </div>
 
-      <div className="px-2 py-1 text-[9px] text-ink">
+      <div className={`text-ink space-y-0.5 ${compact ? 'px-2 py-1 text-[10px]' : 'px-3 py-2 text-xs'}`}>
         <Row label="ფასი" value={`₾${tile.price}`} />
 
         {compact ? (
           <Row
-            label={houses === 5 ? 'სასტუმრო' : houses > 0 ? `${houses} სახლი` : 'ქირა'}
+            label={mortgaged ? 'დაგირავებული' : houses === 5 ? 'სასტუმრო' : houses > 0 ? `${houses} სახლი` : 'ქირა'}
             value={currentRent !== null ? `₾${currentRent}` : '—'}
             highlight
           />
@@ -87,20 +94,34 @@ export default function TitleDeed({ index, room, compact = false, onClick }) {
         )}
 
         {!compact && owner && (
-          <div className="mt-1 flex items-center gap-1 border-t border-ink/10 pt-1">
-            <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: owner.color }} />
-            <span className="truncate text-[8px]">{owner.name}</span>
+          <div className="mt-1 flex items-center gap-1.5 border-t border-ink/10 pt-1.5">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: owner.color }} />
+            <span className="truncate text-[10px]">{owner.name}</span>
           </div>
+        )}
+
+        {!compact && owner?.id === myId && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (mortgaged) unmortgageProperty(index);
+              else mortgageProperty(index);
+            }}
+            disabled={!mortgaged && houses > 0}
+            className="mt-1.5 w-full rounded bg-ink/10 py-1 text-[10px] font-bold text-ink transition hover:bg-ink/20 disabled:opacity-30 disabled:hover:bg-ink/10"
+          >
+            {mortgaged ? `გამოსყიდვა · ₾${unmortgageCost}` : `დაგირავება · +₾${tile.mortgage}`}
+          </button>
         )}
       </div>
 
       {houses > 0 && (
-        <div className="flex justify-center gap-px bg-ink/5 py-0.5">
+        <div className="flex justify-center gap-1 bg-ink/5 py-1">
           {houses === 5 ? (
-            <span className="h-[7px] w-[11px] rounded-[1px] bg-[#c0392b]" />
+            <span className="h-2.5 w-4 rounded-[1px] bg-[#c0392b]" />
           ) : (
             Array.from({ length: houses }, (_, k) => (
-              <span key={k} className="h-[7px] w-[7px] rounded-[1px] bg-[#1e7a3c]" />
+              <span key={k} className="h-2.5 w-2.5 rounded-[1px] bg-[#1e7a3c]" />
             ))
           )}
         </div>

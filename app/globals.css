@@ -13,3 +13,34 @@
 body {
   font-family: var(--font-body);
 }
+
+/* Custom-styled number inputs (lobby settings) draw their own prefix/suffix —
+   the native spinner just gets in the way. */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Thin themed scrollbar for chat/log panels — the default Windows/Chrome
+   scrollbar (with its up/down arrow buttons) looks broken in a 220px column. */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(244, 236, 217, 0.2) transparent;
+}
+.scroll-thin::-webkit-scrollbar {
+  width: 6px;
+}
+.scroll-thin::-webkit-scrollbar-button {
+  display: none;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: rgba(244, 236, 217, 0.2);
+  border-radius: 3px;
+}
+.scroll-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(244, 236, 217, 0.35);
+}
