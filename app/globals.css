@@ -10,8 +10,507 @@
   --font-body: var(--font-sans-ka), sans-serif;
 }
 
+/* ==========================================================================
+   THEMES
+   Every theme is a block of custom properties keyed on [data-theme]. Because
+   they're plain inherited variables, setting the attribute on <html> themes
+   the app, and setting it on any small element themes just that subtree —
+   which is how the picker renders a live preview of each option without
+   mounting anything.
+
+   The layout each theme paints follows one rule: a flat, undecorated centre
+   band wide enough for the board to sit on, with all texture and scenery
+   pushed out to the left and right margins. --th-art is the decoration,
+   --th-center is the plate laid over the middle of it (see ThemeBackdrop).
+   ========================================================================== */
+
+:root {
+  /* The three Tailwind tokens that follow the theme. Declared unlayered so
+     they win over the @theme defaults above, which stay as the fallback
+     values for anything rendered before a theme is applied. */
+  --color-roast: var(--th-edge);
+  --color-parchment: var(--th-text);
+  --color-gold: var(--th-accent);
+  /* Everything drawn on the board or on a deed uses the ink token, so pointing
+     it at the board palette themes all of it at once — including the /NN
+     opacity variants used for rent rows, hairlines and house strips. */
+  --color-ink: var(--bd-ink);
+}
+
+/* Dark-surface defaults — panels, hairlines and inputs for the majority of
+   themes. The light-surface list below overrides these. */
+[data-theme] {
+  /* Substantial enough to stay readable over a photographic backdrop —
+     a 5% white wash disappears completely against artwork. */
+  --th-panel: rgba(10, 12, 16, 0.55);
+  --th-panel-hi: rgba(255, 255, 255, 0.12);
+  --th-line: rgba(255, 255, 255, 0.1);
+  --th-line-hi: rgba(255, 255, 255, 0.15);
+  --th-sunken: rgba(0, 0, 0, 0.2);
+  --th-sunken-hi: rgba(0, 0, 0, 0.3);
+  --th-modal: #1c1512;
+  /* Text drawn ON an accent-filled button. Dark themes all use a bright
+     accent, so dark ink reads; the light themes below invert it because
+     their accents have to be dark to stay legible as text elsewhere. */
+  --th-on-accent: #2a2018;
+
+  /* Status colours for the chronicle and the debt prompt. The pale 300-level
+     shades only work over a dark backdrop; the light themes below swap in
+     800-level equivalents so the same log stays readable on parchment. */
+  --th-rent: #fcd34d;
+  --th-buy: #6ee7b7;
+  --th-build: #5eead4;
+  --th-danger: #fca5a5;
+  --th-card: #7dd3fc;
+  --th-jail: #c4b5fd;
+
+  /* ---- The board itself ----
+     Defaults are the original printed-board look; the families further down
+     retheme it. What deliberately never changes: the eight property group
+     colours, owner colours, and the green houses / red hotels. Those are game
+     information, not decoration — recolouring them would make the board
+     harder to read, which is the opposite of the point. */
+  /* Colour of the plate laid over the middle. Gradient themes want it
+     opaque; a theme backed by a photograph overrides it with a partly
+     transparent mix so the image still reads under the board. */
+  --th-plate: var(--th-center);
+
+  --bd-face: #f4ecd9;    /* tile faces */
+  --bd-ink: #2a2018;     /* all text and icons on the board */
+  --bd-center: #f4ecd9;  /* the centre panel the logo sits on */
+  --bd-frame: #0d0908;   /* thick outer border */
+  --bd-card: #ffffff;    /* title deeds, drawn cards, auction panel */
+
+  /* The four corners keep their green/orange identity but are mixed off the
+     tile face, so they follow the board instead of fighting it. */
+  --bd-go: color-mix(in srgb, var(--bd-face) 80%, #2e8b57);
+  --bd-parking: color-mix(in srgb, var(--bd-face) 93%, #2e8b57);
+  --bd-gotojail: color-mix(in srgb, var(--bd-face) 70%, #2e8b57);
+  --bd-jail: color-mix(in srgb, var(--bd-face) 76%, #f97316);
+  --bd-chance: color-mix(in srgb, var(--bd-card) 84%, #f7941d);
+  --bd-chest: color-mix(in srgb, var(--bd-card) 84%, #29a3e0);
+}
+
+/* ---- Board families ----
+   Grouped rather than per-theme: a board only needs to belong to the backdrop,
+   and five treatments cover all 26 without 26 near-identical blocks. */
+
+/* Dark board — light ink on near-black tiles. */
+[data-board="dark"],
+[data-theme="black"], [data-theme="blue"], [data-theme="space"],
+[data-theme="neon"], [data-theme="arcade"], [data-theme="graffiti"],
+[data-theme="nature"], [data-theme="ocean"], [data-theme="gothic"],
+[data-theme="halloween"], [data-theme="tigers"], [data-theme="carbon"] {
+  --bd-face: #1c2027;
+  --bd-ink: #ece7dc;
+  --bd-center: #151920;
+  --bd-frame: #000000;
+  --bd-card: #262b33;
+}
+
+/* Cool white — crisp gallery board. */
+[data-board="white"],
+[data-theme="light"], [data-theme="marble"], [data-theme="icysea"],
+[data-theme="winter"], [data-theme="sky"] {
+  --bd-face: #f8f9fb;
+  --bd-ink: #22282f;
+  --bd-center: #eef2f7;
+  --bd-frame: #26313d;
+  --bd-card: #ffffff;
+}
+
+/* Neutral stone. */
+[data-board="stone"],
+[data-theme="gray"], [data-theme="concrete"] {
+  --bd-face: #e8e7e3;
+  --bd-ink: #212322;
+  --bd-center: #dedcd7;
+  --bd-frame: #1c1e20;
+  --bd-card: #f5f4f1;
+}
+
+/* Timber — a board that matches the table it's sitting on. */
+[data-board="timber"],
+[data-theme="wood"], [data-theme="darkwood"], [data-theme="gameroom"] {
+  --bd-face: #f2e6cf;
+  --bd-ink: #332514;
+  --bd-center: #ecdec2;
+  --bd-frame: #3a2415;
+  --bd-card: #fdf8ee;
+}
+
+/* Aged paper. */
+[data-board="paper"],
+[data-theme="parchment"], [data-theme="newspaper"], [data-theme="sand"] {
+  --bd-face: #f1e6cc;
+  --bd-ink: #2f2716;
+  --bd-center: #ece0c2;
+  --bd-frame: #4a3c22;
+  --bd-card: #fbf5e6;
+}
+
+/* Themes with a pale backdrop need dark ink and darkened surfaces instead,
+   or every panel and label washes out into the background. */
+[data-surface="light"],
+[data-theme="light"],
+[data-theme="gray"],
+[data-theme="wood"],
+[data-theme="sand"],
+[data-theme="marble"],
+[data-theme="parchment"],
+[data-theme="newspaper"],
+[data-theme="concrete"],
+[data-theme="sky"],
+[data-theme="icysea"],
+[data-theme="winter"] {
+  --th-panel: rgba(255, 255, 255, 0.72);
+  --th-panel-hi: rgba(0, 0, 0, 0.08);
+  --th-line: rgba(0, 0, 0, 0.12);
+  --th-line-hi: rgba(0, 0, 0, 0.2);
+  --th-sunken: rgba(0, 0, 0, 0.06);
+  --th-sunken-hi: rgba(255, 255, 255, 0.55);
+  --th-modal: #f6f3ec;
+  --th-on-accent: #fdfaf3;
+
+  --th-rent: #92400e;
+  --th-buy: #065f46;
+  --th-build: #115e59;
+  --th-danger: #9f1239;
+  --th-card: #075985;
+  --th-jail: #5b21b6;
+}
+
+/* ---- Category 1: solid colours & textures ---- */
+
+[data-theme="dark"] {
+  --th-center: #2b2e34;
+  --th-edge: #15171b;
+  --th-text: #f4ecd9;
+  --th-accent: #d4a94b;
+  --th-art:
+    radial-gradient(120% 90% at 0% 50%, rgba(150, 170, 200, 0.16), transparent 60%),
+    radial-gradient(120% 90% at 100% 50%, rgba(150, 170, 200, 0.16), transparent 60%);
+}
+
+[data-theme="light"] {
+  --th-center: #f8f6f2;
+  --th-edge: #e2e4e7;
+  --th-text: #2a2620;
+  --th-accent: #9a7420;
+  --th-art:
+    radial-gradient(110% 80% at 0% 40%, rgba(255, 255, 255, 0.9), transparent 65%),
+    radial-gradient(110% 80% at 100% 40%, rgba(255, 255, 255, 0.9), transparent 65%);
+}
+
+[data-theme="black"] {
+  --th-center: #000000;
+  --th-edge: #000000;
+  --th-text: #ede8e0;
+  --th-accent: #b9b3a6;
+  --th-art:
+    linear-gradient(90deg, rgba(70, 72, 76, 0.5) 0%, transparent 18%),
+    linear-gradient(270deg, rgba(70, 72, 76, 0.5) 0%, transparent 18%);
+}
+
+[data-theme="gray"] {
+  --th-center: #8d9195;
+  --th-edge: #63686d;
+  --th-text: #17191b;
+  --th-accent: #2e3438;
+  --th-art:
+    radial-gradient(100% 70% at 0% 50%, rgba(255, 255, 255, 0.22), transparent 60%),
+    radial-gradient(100% 70% at 100% 50%, rgba(255, 255, 255, 0.22), transparent 60%);
+}
+
+[data-theme="blue"] {
+  --th-center: #101a34;
+  --th-edge: #070c1c;
+  --th-text: #e6ecf8;
+  --th-accent: #6f9be0;
+  --th-art:
+    radial-gradient(110% 85% at 0% 50%, rgba(46, 92, 190, 0.5), transparent 62%),
+    radial-gradient(110% 85% at 100% 50%, rgba(46, 92, 190, 0.5), transparent 62%);
+}
+
+[data-theme="wood"] {
+  --th-center: #b98d55;
+  --th-edge: #8a5f31;
+  /* Light oak is a pale backdrop — cream text on it washes out at the low
+     opacities the UI labels use, so this one takes dark ink like the other
+     light themes. Dark walnut below keeps the cream. */
+  --th-text: #2e1f10;
+  --th-accent: #5c3b12;
+  /* Grain: fine irregular stripes, plus a warm ring sweep at each margin. */
+  --th-art:
+    repeating-linear-gradient(92deg, rgba(80, 46, 16, 0.34) 0 2px, transparent 2px 7px, rgba(120, 74, 30, 0.24) 7px 9px, transparent 9px 16px),
+    radial-gradient(80% 120% at -10% 50%, rgba(220, 160, 90, 0.5), transparent 60%),
+    radial-gradient(80% 120% at 110% 50%, rgba(220, 160, 90, 0.5), transparent 60%);
+}
+
+[data-theme="darkwood"] {
+  --th-center: #3d2618;
+  --th-edge: #24150d;
+  --th-text: #f2e2cb;
+  --th-accent: #c99552;
+  --th-art:
+    repeating-linear-gradient(91deg, rgba(12, 6, 3, 0.5) 0 3px, transparent 3px 9px, rgba(92, 52, 26, 0.35) 9px 11px, transparent 11px 19px),
+    radial-gradient(70% 110% at -5% 45%, rgba(150, 92, 44, 0.4), transparent 62%),
+    radial-gradient(70% 110% at 105% 45%, rgba(150, 92, 44, 0.4), transparent 62%);
+}
+
+[data-theme="newspaper"] {
+  --th-center: #efe7d3;
+  --th-edge: #d9cdb2;
+  --th-text: #2b261c;
+  --th-accent: #7d5f2a;
+  /* Columns of "print": dense text-height rules broken by column gutters. */
+  --th-art:
+    repeating-linear-gradient(0deg, rgba(60, 50, 34, 0.28) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(90deg, transparent 0 46px, rgba(120, 104, 74, 0.35) 46px 50px);
+}
+
+[data-theme="concrete"] {
+  --th-center: #b7b5b0;
+  --th-edge: #96948f;
+  --th-text: #1e1e1c;
+  --th-accent: #4a4844;
+  --th-art:
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.5) 0 2px, transparent 3px),
+    radial-gradient(circle at 72% 68%, rgba(0, 0, 0, 0.18) 0 2px, transparent 3px),
+    radial-gradient(circle at 40% 85%, rgba(0, 0, 0, 0.12) 0 3px, transparent 4px),
+    repeating-linear-gradient(115deg, rgba(0, 0, 0, 0.05) 0 3px, transparent 3px 22px);
+}
+
+[data-theme="sand"] {
+  --th-center: #dfc99e;
+  --th-edge: #c3a266;
+  --th-text: #34281a;
+  --th-accent: #8a6423;
+  --th-art:
+    repeating-linear-gradient(74deg, rgba(160, 118, 60, 0.34) 0 5px, transparent 5px 17px),
+    radial-gradient(90% 120% at 0% 60%, rgba(255, 214, 150, 0.6), transparent 62%),
+    radial-gradient(90% 120% at 100% 60%, rgba(255, 214, 150, 0.6), transparent 62%);
+}
+
+[data-theme="marble"] {
+  --th-center: #f4f2ee;
+  --th-edge: #e3e0da;
+  --th-text: #24221e;
+  --th-accent: #93762f;
+  /* Veining: a few long soft diagonals in charcoal with a gold thread. */
+  --th-art:
+    linear-gradient(102deg, transparent 34%, rgba(70, 70, 76, 0.4) 36%, transparent 39%),
+    linear-gradient(84deg, transparent 54%, rgba(70, 70, 76, 0.28) 56%, transparent 60%),
+    linear-gradient(115deg, transparent 68%, rgba(176, 141, 62, 0.45) 69%, transparent 71%);
+}
+
+[data-theme="carbon"] {
+  --th-center: #232629;
+  --th-edge: #17191c;
+  --th-text: #e9edf1;
+  --th-accent: #7fa6c8;
+  /* Woven twill: two offset checkers make the over-under illusion. */
+  --th-art:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.09) 0 4px, transparent 4px 8px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.07) 0 4px, transparent 4px 8px),
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.5) 0 8px, transparent 8px 16px);
+}
+
+[data-theme="parchment"] {
+  --th-center: #e9dab6;
+  --th-edge: #d3bd90;
+  --th-text: #33291a;
+  --th-accent: #8a6a24;
+  --th-art:
+    radial-gradient(60% 40% at 12% 22%, rgba(150, 116, 60, 0.32), transparent 60%),
+    radial-gradient(50% 35% at 88% 72%, rgba(150, 116, 60, 0.3), transparent 60%),
+    radial-gradient(40% 30% at 76% 18%, rgba(112, 82, 40, 0.24), transparent 60%);
+}
+
+/* ---- Category 2: scenic & illustrated ---- */
+
+[data-theme="space"] {
+  --th-center: #06070f;
+  --th-edge: #04050b;
+  --th-text: #e8e6f6;
+  --th-accent: #b48ce8;
+  --th-art:
+    radial-gradient(circle at 8% 22%, rgba(255, 255, 255, 0.9) 0 1px, transparent 2px),
+    radial-gradient(circle at 15% 68%, rgba(255, 255, 255, 0.7) 0 1px, transparent 2px),
+    radial-gradient(circle at 90% 34%, rgba(255, 255, 255, 0.85) 0 1px, transparent 2px),
+    radial-gradient(circle at 84% 78%, rgba(255, 255, 255, 0.6) 0 1px, transparent 2px),
+    radial-gradient(85% 75% at -5% 40%, rgba(150, 60, 210, 0.55), transparent 62%),
+    radial-gradient(85% 75% at 105% 60%, rgba(40, 90, 220, 0.55), transparent 62%);
+}
+
+[data-theme="sky"] {
+  --th-center: #cfe4f6;
+  --th-edge: #9dc4e6;
+  --th-text: #1d2b38;
+  --th-accent: #b96a2e;
+  --th-art:
+    radial-gradient(45% 30% at 6% 30%, rgba(255, 255, 255, 0.95), transparent 65%),
+    radial-gradient(40% 26% at 16% 62%, rgba(255, 226, 198, 0.9), transparent 66%),
+    radial-gradient(45% 30% at 94% 36%, rgba(255, 255, 255, 0.95), transparent 65%),
+    radial-gradient(40% 26% at 86% 70%, rgba(255, 214, 190, 0.9), transparent 66%);
+}
+
+[data-theme="tigers"] {
+  --th-center: #1b1307;
+  --th-edge: #0d0904;
+  --th-text: #fbeeda;
+  --th-accent: #f0a03c;
+  /* Stripes read as fur at the margins without pretending to be a photo. */
+  --th-art:
+    repeating-linear-gradient(80deg, rgba(9, 6, 3, 0.92) 0 10px, transparent 10px 30px),
+    radial-gradient(80% 110% at -8% 50%, rgba(232, 130, 30, 0.85), transparent 60%),
+    radial-gradient(80% 110% at 108% 50%, rgba(232, 130, 30, 0.85), transparent 60%);
+}
+
+[data-theme="graffiti"] {
+  --th-center: #1d1a19;
+  --th-edge: #221e1c;
+  --th-text: #f5f1ec;
+  --th-accent: #ffd23f;
+  --th-art:
+    radial-gradient(28% 20% at 8% 24%, rgba(255, 45, 149, 0.9), transparent 65%),
+    radial-gradient(26% 20% at 16% 66%, rgba(0, 200, 255, 0.85), transparent 65%),
+    radial-gradient(28% 20% at 92% 32%, rgba(255, 210, 63, 0.9), transparent 65%),
+    radial-gradient(26% 20% at 84% 74%, rgba(120, 80, 255, 0.85), transparent 65%),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0 26px, transparent 26px 28px);
+}
+
+[data-theme="gothic"] {
+  --th-center: #1a191f;
+  --th-edge: #101015;
+  --th-text: #e7e2ee;
+  --th-accent: #c8a45a;
+  --th-art:
+    radial-gradient(22% 46% at 7% 46%, rgba(255, 176, 74, 0.42), transparent 62%),
+    radial-gradient(22% 46% at 93% 46%, rgba(255, 176, 74, 0.42), transparent 62%),
+    radial-gradient(34% 52% at 50% -14%, rgba(96, 118, 200, 0.36), transparent 62%),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.42) 0 30px, transparent 30px 34px);
+}
+
+[data-theme="arcade"] {
+  --th-center: #08070e;
+  --th-edge: #0d0a18;
+  --th-text: #f1ecff;
+  --th-accent: #ff5fc8;
+  --th-art:
+    repeating-linear-gradient(90deg, rgba(255, 95, 200, 0.55) 0 5px, transparent 5px 13px, rgba(70, 230, 255, 0.5) 13px 18px, transparent 18px 34px),
+    radial-gradient(70% 100% at -6% 50%, rgba(120, 40, 200, 0.6), transparent 62%),
+    radial-gradient(70% 100% at 106% 50%, rgba(120, 40, 200, 0.6), transparent 62%);
+}
+
+[data-theme="neon"] {
+  --th-center: #04040a;
+  --th-edge: #06061a;
+  --th-text: #dff6ff;
+  --th-accent: #2ff3ff;
+  --th-art:
+    repeating-linear-gradient(90deg, rgba(47, 243, 255, 0.55) 0 1px, transparent 1px 34px),
+    repeating-linear-gradient(0deg, rgba(255, 47, 200, 0.4) 0 1px, transparent 1px 34px),
+    radial-gradient(80% 60% at 50% 108%, rgba(47, 243, 255, 0.3), transparent 60%);
+}
+
+[data-theme="icysea"] {
+  --th-center: #dfeaf1;
+  --th-edge: #9ebccf;
+  --th-text: #16303f;
+  --th-accent: #1f6f96;
+  --th-art:
+    linear-gradient(158deg, rgba(255, 255, 255, 0.92) 0 22%, transparent 22.5%),
+    linear-gradient(-158deg, rgba(255, 255, 255, 0.92) 0 22%, transparent 22.5%),
+    radial-gradient(90% 70% at 0% 78%, rgba(22, 78, 122, 0.55), transparent 62%),
+    radial-gradient(90% 70% at 100% 78%, rgba(22, 78, 122, 0.55), transparent 62%);
+}
+
+[data-theme="ocean"] {
+  --th-center: #06293a;
+  --th-edge: #03151f;
+  --th-text: #dff1f8;
+  --th-accent: #4fc3d9;
+  --th-art:
+    repeating-linear-gradient(72deg, rgba(150, 235, 255, 0.16) 0 3px, transparent 3px 30px),
+    radial-gradient(circle at 12% 40%, rgba(200, 245, 255, 0.4) 0 3px, transparent 4px),
+    radial-gradient(circle at 88% 62%, rgba(200, 245, 255, 0.35) 0 4px, transparent 5px),
+    radial-gradient(90% 80% at 50% -20%, rgba(120, 220, 255, 0.4), transparent 62%);
+}
+
+[data-theme="gameroom"] {
+  --th-center: #2a1d13;
+  --th-edge: #1a1109;
+  --th-text: #f6e7cf;
+  --th-accent: #e0b062;
+  --th-art:
+    radial-gradient(26% 34% at 6% 62%, rgba(255, 150, 50, 0.6), transparent 64%),
+    radial-gradient(20% 26% at 94% 40%, rgba(120, 220, 150, 0.35), transparent 64%),
+    repeating-linear-gradient(0deg, rgba(84, 52, 26, 0.5) 0 7px, transparent 7px 40px);
+}
+
+[data-theme="nature"] {
+  --th-center: #12241a;
+  --th-edge: #0a1710;
+  --th-text: #e7f3e4;
+  --th-accent: #86c46a;
+  --th-art:
+    radial-gradient(circle at 10% 26%, rgba(126, 200, 96, 0.5) 0 16px, transparent 22px),
+    radial-gradient(circle at 20% 72%, rgba(96, 170, 76, 0.42) 0 22px, transparent 30px),
+    radial-gradient(circle at 90% 34%, rgba(126, 200, 96, 0.5) 0 18px, transparent 26px),
+    radial-gradient(circle at 80% 78%, rgba(96, 170, 76, 0.42) 0 20px, transparent 28px),
+    radial-gradient(80% 100% at 50% -10%, rgba(220, 255, 180, 0.24), transparent 60%);
+}
+
+[data-theme="winter"] {
+  --th-center: #eef4f8;
+  --th-edge: #c5d6e2;
+  --th-text: #1f2c36;
+  --th-accent: #2f6f8f;
+  /* Pine silhouettes as stacked triangles at each margin. */
+  --th-art:
+    conic-gradient(from 180deg at 8% 74%, transparent 0 42%, rgba(38, 74, 62, 0.85) 42% 58%, transparent 58%),
+    conic-gradient(from 180deg at 17% 84%, transparent 0 44%, rgba(30, 62, 52, 0.75) 44% 56%, transparent 56%),
+    conic-gradient(from 180deg at 92% 74%, transparent 0 42%, rgba(38, 74, 62, 0.85) 42% 58%, transparent 58%),
+    conic-gradient(from 180deg at 83% 84%, transparent 0 44%, rgba(30, 62, 52, 0.75) 44% 56%, transparent 56%),
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.9) 0 2px, transparent 3px);
+}
+
+[data-theme="halloween"] {
+  --th-center: #17101f;
+  --th-edge: #0d0813;
+  --th-text: #f6e9d6;
+  --th-accent: #ff8a24;
+  --th-art:
+    radial-gradient(20% 26% at 8% 70%, rgba(255, 138, 36, 0.75), transparent 64%),
+    radial-gradient(18% 24% at 92% 74%, rgba(255, 138, 36, 0.6), transparent 64%),
+    radial-gradient(circle at 50% 8%, rgba(245, 240, 210, 0.85) 0 22px, transparent 26px),
+    radial-gradient(70% 60% at 50% 4%, rgba(150, 120, 200, 0.3), transparent 60%);
+}
+
 body {
   font-family: var(--font-body);
+  /* iOS shrinks nothing and grows text in landscape unless told otherwise,
+     which silently breaks the board's carefully sized tile labels. */
+  -webkit-text-size-adjust: 100%;
+}
+
+/* The sticky turn bar sits at the very bottom of a phone screen, where the
+   home indicator lives — keep the buttons above it. */
+.pb-safe {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
+
+/* Tap targets shouldn't flash a grey box on touch, and a double-tap on the
+   board shouldn't be read as a zoom gesture on the controls. */
+@media (hover: none) {
+  button,
+  label,
+  select,
+  a {
+    -webkit-tap-highlight-color: rgba(212, 169, 75, 0.18);
+    touch-action: manipulation;
+  }
 }
 
 /* Custom-styled number inputs (lobby settings) draw their own prefix/suffix —
@@ -44,3 +543,258 @@ input[type='number']::-webkit-inner-spin-button {
 .scroll-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(244, 236, 217, 0.35);
 }
+
+/* ---- Category 3: cinematic ----
+   Each keeps the same contract as the rest: a flat centre band for the board,
+   with the set dressing pushed out to the left and right margins. These are
+   CSS approximations of the reference art — a theme's --th-art can be swapped
+   for a url(...) once real images exist, without touching anything else. */
+
+[data-theme="rebel"] {
+  --th-center: #2b3138;
+  --th-edge: #12161b;
+  --th-text: #eef1f4;
+  --th-accent: #ff8a3d;
+  /* Left: the glow of a holographic starmap table. Right: a blast window
+     onto starfield. */
+  --th-art:
+    radial-gradient(38% 46% at 7% 62%, rgba(72, 178, 255, 0.55), transparent 66%),
+    radial-gradient(24% 30% at 12% 60%, rgba(150, 220, 255, 0.4), transparent 64%),
+    radial-gradient(circle at 88% 26%, rgba(255, 255, 255, 0.85) 0 1px, transparent 2px),
+    radial-gradient(circle at 94% 58%, rgba(255, 255, 255, 0.7) 0 1px, transparent 2px),
+    radial-gradient(circle at 82% 76%, rgba(255, 255, 255, 0.6) 0 1px, transparent 2px),
+    linear-gradient(270deg, rgba(24, 34, 48, 0.95) 0 14%, transparent 22%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 2px, transparent 2px 26px);
+}
+
+[data-theme="empire"] {
+  --th-center: #08090b;
+  --th-edge: #030304;
+  --th-text: #e9edf2;
+  --th-accent: #e02b2b;
+  /* Left: red and white console light panels. Right: the viewport, with a
+     planet's limb glowing at the edge of the void. */
+  --th-art:
+    repeating-linear-gradient(90deg, rgba(224, 43, 43, 0.75) 0 3px, transparent 3px 14px, rgba(230, 236, 245, 0.5) 14px 16px, transparent 16px 40px),
+    radial-gradient(60% 90% at 104% 50%, rgba(60, 140, 230, 0.5), transparent 55%),
+    radial-gradient(52% 78% at 108% 50%, rgba(10, 14, 22, 0.95), transparent 60%);
+}
+
+[data-theme="clonewars"] {
+  --th-center: #2b3a4d;
+  --th-edge: #16202c;
+  --th-text: #eaf2fa;
+  --th-accent: #4fa8e0;
+  /* The show's angular, high-contrast look: blue legion striping at one
+     margin, laser fire streaking across the other. */
+  --th-art:
+    repeating-linear-gradient(74deg, rgba(79, 168, 224, 0.55) 0 6px, transparent 6px 16px, rgba(240, 248, 255, 0.35) 16px 19px, transparent 19px 34px),
+    linear-gradient(200deg, transparent 40%, rgba(120, 255, 120, 0.5) 41%, transparent 43%),
+    linear-gradient(160deg, transparent 60%, rgba(120, 255, 160, 0.4) 61%, transparent 63%),
+    radial-gradient(70% 100% at 106% 50%, rgba(12, 22, 34, 0.9), transparent 62%);
+}
+
+[data-theme="jedi"] {
+  --th-center: #d9cdb4;
+  --th-edge: #b3a184;
+  --th-text: #2c2314;
+  --th-accent: #2f6f8f;
+  /* Temple columns at both margins, warm light raking between them, and the
+     cool glow of a sabre hilt resting on the left ledge. */
+  --th-art:
+    repeating-linear-gradient(90deg, rgba(120, 98, 66, 0.42) 0 14px, transparent 14px 62px),
+    radial-gradient(30% 44% at 6% 74%, rgba(90, 190, 255, 0.5), transparent 62%),
+    radial-gradient(80% 60% at 0% 10%, rgba(255, 232, 180, 0.75), transparent 60%),
+    radial-gradient(80% 60% at 100% 10%, rgba(255, 232, 180, 0.75), transparent 60%);
+}
+
+[data-theme="sith"] {
+  --th-center: #000000;
+  --th-edge: #050203;
+  --th-text: #f2e4e6;
+  --th-accent: #e01b24;
+  /* Jagged obsidian columns catching crimson rim light, and the bloom of a
+     crossguard sabre at the right margin. */
+  --th-art:
+    repeating-linear-gradient(84deg, rgba(224, 27, 36, 0.5) 0 2px, transparent 2px 8px, rgba(90, 8, 14, 0.85) 8px 22px, transparent 22px 30px),
+    radial-gradient(26% 40% at 96% 52%, rgba(255, 40, 50, 0.65), transparent 62%),
+    radial-gradient(70% 90% at 50% 50%, rgba(0, 0, 0, 0.95), transparent 60%);
+}
+
+/* Cinematic board treatments. The Jedi temple floor is the only pale one. */
+[data-theme="rebel"], [data-theme="empire"], [data-theme="clonewars"], [data-theme="sith"] {
+  --bd-face: #1c2027;
+  --bd-ink: #ece7dc;
+  --bd-center: #151920;
+  --bd-frame: #000000;
+  --bd-card: #262b33;
+}
+
+[data-theme="jedi"] {
+  --bd-face: #e8dcc2;
+  --bd-ink: #2f2716;
+  --bd-center: #e0d2b4;
+  --bd-frame: #4a3c22;
+  --bd-card: #f8f1e0;
+}
+
+/* Jedi is the one cinematic theme with a pale backdrop. */
+[data-theme="jedi"] {
+  --th-panel: rgba(255, 255, 255, 0.72);
+  --th-panel-hi: rgba(0, 0, 0, 0.08);
+  --th-line: rgba(0, 0, 0, 0.12);
+  --th-line-hi: rgba(0, 0, 0, 0.2);
+  --th-sunken: rgba(0, 0, 0, 0.06);
+  --th-sunken-hi: rgba(255, 255, 255, 0.55);
+  --th-modal: #f6f1e4;
+  --th-on-accent: #fdfaf3;
+  --th-rent: #92400e;
+  --th-buy: #065f46;
+  --th-build: #115e59;
+  --th-danger: #9f1239;
+  --th-card: #075985;
+  --th-jail: #5b21b6;
+}
+
+/* ---- Custom themes ----
+   A user-made theme sets --th-center/--th-edge/--th-text/--th-accent/--th-art
+   inline on <html>, and picks its board and surface through the data-board /
+   data-surface hooks above. This block only needs to exist so [data-theme]
+   still matches and the shared defaults apply. */
+[data-theme="custom"] {
+  --th-center: #2b2e34;
+  --th-edge: #15171b;
+  --th-text: #f4ecd9;
+  --th-accent: #d4a94b;
+}
+
+/* ---- Photographic themes ----
+   Real artwork in the margins, replacing the gradient approximations these
+   themes used to paint. The centre plate drops to a scrim so the image still
+   is left fully transparent: the artwork already has a clean centre by
+   design, the board is opaque, and a scrim here just paints a dark band
+   across the middle of the picture.
+   The seven themes NOT listed here (dark, light, black, gray, blue, carbon,
+   neon) are flat colours and geometric grids — CSS is the right tool for
+   those and a photo would only add noise. */
+
+[data-theme="wood"] {
+  --th-art: url("/themes/wood.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="darkwood"] {
+  --th-art: url("/themes/darkwood.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="newspaper"] {
+  --th-art: url("/themes/newspaper.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="concrete"] {
+  --th-art: url("/themes/concrete.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="sand"] {
+  --th-art: url("/themes/sand.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="marble"] {
+  --th-art: url("/themes/marble.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="parchment"] {
+  --th-art: url("/themes/parchment.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="space"] {
+  --th-art: url("/themes/space.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="sky"] {
+  --th-art: url("/themes/sky.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="tigers"] {
+  --th-art: url("/themes/tigers.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="graffiti"] {
+  --th-art: url("/themes/graffiti.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="gothic"] {
+  --th-art: url("/themes/gothic.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="arcade"] {
+  --th-art: url("/themes/arcade.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="icysea"] {
+  --th-art: url("/themes/icysea.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="ocean"] {
+  --th-art: url("/themes/ocean.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="gameroom"] {
+  --th-art: url("/themes/gameroom.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="nature"] {
+  --th-art: url("/themes/nature.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="winter"] {
+  --th-art: url("/themes/winter.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="halloween"] {
+  --th-art: url("/themes/halloween.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="rebel"] {
+  --th-art: url("/themes/rebel.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="empire"] {
+  --th-art: url("/themes/empire.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="clonewars"] {
+  --th-art: url("/themes/clonewars.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="jedi"] {
+  --th-art: url("/themes/jedi.jpg");
+  --th-plate: transparent;
+}
+
+[data-theme="sith"] {
+  --th-art: url("/themes/sith.jpg");
+  --th-plate: transparent;
+}
+

@@ -43,7 +43,7 @@ function Composer({ room, myId, others, onClose }) {
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-lg rounded-2xl border border-gold/30 bg-[#1c1512] p-5 shadow-2xl"
+        className="scroll-thin max-h-[92svh] w-full max-w-lg overflow-y-auto rounded-2xl border border-gold/30 bg-[var(--th-modal)] p-4 shadow-2xl sm:p-5"
       >
         <h2 className="mb-3 font-display text-lg font-bold text-parchment">ახალი ვაჭრობა</h2>
 
@@ -51,14 +51,16 @@ function Composer({ room, myId, others, onClose }) {
         <select
           value={toId}
           onChange={(e) => { setToId(e.target.value); setRequestProps([]); }}
-          className="mb-4 mt-1 w-full rounded-lg border border-white/15 bg-black/30 p-2 text-sm text-parchment focus:border-gold focus:outline-none"
+          className="mb-4 mt-1 w-full rounded-lg border border-[var(--th-line-hi)] bg-[var(--th-sunken-hi)] p-2 text-sm text-parchment focus:border-gold focus:outline-none"
         >
           {others.map((p) => (
             <option key={p.id} value={p.id}>{p.name}</option>
           ))}
         </select>
 
-        <div className="grid grid-cols-2 gap-3">
+        {/* Side-by-side offer/request only once there's room for two readable
+            columns of street names — stacked below that. */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <div className="mb-1.5 text-xs font-bold text-gold">შენი შეთავაზება</div>
             <input
@@ -68,16 +70,16 @@ function Composer({ room, myId, others, onClose }) {
               value={offerCash}
               onChange={(e) => setOfferCash(e.target.value)}
               placeholder="₾ ნაღდი"
-              className="mb-2 w-full rounded-lg border border-white/15 bg-black/30 p-2 text-sm text-parchment focus:border-gold focus:outline-none"
+              className="mb-2 w-full rounded-lg border border-[var(--th-line-hi)] bg-[var(--th-sunken-hi)] p-2 text-sm text-parchment focus:border-gold focus:outline-none"
             />
             <div className="max-h-40 space-y-1 overflow-y-auto pr-1">
               {myProps.map((i) => (
-                <label key={i} className="flex items-center gap-1.5 text-xs text-parchment/80">
+                <label key={i} className="flex min-h-9 items-center gap-2 text-xs text-parchment/80">
                   <input type="checkbox" checked={offerProps.includes(i)} onChange={() => toggle(offerProps, setOfferProps, i)} />
                   {TILES[i].name}
                 </label>
               ))}
-              {myProps.length === 0 && <div className="text-xs text-parchment/30">საკუთრება არაა</div>}
+              {myProps.length === 0 && <div className="text-xs text-parchment/55">საკუთრება არაა</div>}
             </div>
           </div>
 
@@ -89,16 +91,16 @@ function Composer({ room, myId, others, onClose }) {
               value={requestCash}
               onChange={(e) => setRequestCash(e.target.value)}
               placeholder="₾ ნაღდი"
-              className="mb-2 w-full rounded-lg border border-white/15 bg-black/30 p-2 text-sm text-parchment focus:border-gold focus:outline-none"
+              className="mb-2 w-full rounded-lg border border-[var(--th-line-hi)] bg-[var(--th-sunken-hi)] p-2 text-sm text-parchment focus:border-gold focus:outline-none"
             />
             <div className="max-h-40 space-y-1 overflow-y-auto pr-1">
               {theirProps.map((i) => (
-                <label key={i} className="flex items-center gap-1.5 text-xs text-parchment/80">
+                <label key={i} className="flex min-h-9 items-center gap-2 text-xs text-parchment/80">
                   <input type="checkbox" checked={requestProps.includes(i)} onChange={() => toggle(requestProps, setRequestProps, i)} />
                   {TILES[i].name}
                 </label>
               ))}
-              {theirProps.length === 0 && <div className="text-xs text-parchment/30">საკუთრება არაა</div>}
+              {theirProps.length === 0 && <div className="text-xs text-parchment/55">საკუთრება არაა</div>}
             </div>
           </div>
         </div>
@@ -106,14 +108,14 @@ function Composer({ room, myId, others, onClose }) {
         <div className="mt-4 flex gap-2.5">
           <button
             onClick={onClose}
-            className="flex-1 rounded-lg border border-white/15 py-2.5 font-bold text-parchment/70 transition hover:bg-white/5"
+            className="flex-1 rounded-lg border border-[var(--th-line-hi)] py-2.5 font-bold text-parchment/70 transition hover:bg-[var(--th-panel)]"
           >
             გაუქმება
           </button>
           <button
             onClick={submit}
             disabled={!toId}
-            className="flex-1 rounded-lg bg-gold py-2.5 font-bold text-ink transition hover:bg-[#e0b95c] disabled:opacity-40"
+            className="flex-1 rounded-lg bg-gold py-2.5 font-bold text-[var(--th-on-accent)] transition hover:brightness-110 disabled:opacity-40"
           >
             გაგზავნა
           </button>
@@ -142,13 +144,13 @@ export default function TradePanel() {
   });
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+    <div className="rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] p-3">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-[10px] uppercase tracking-widest text-parchment/50">ვაჭრობა</span>
         {others.length > 0 && me && !me.bankrupt && (
           <button
             onClick={() => setComposing(true)}
-            className="rounded bg-gold/90 px-2 py-1 text-[10px] font-bold text-ink transition hover:bg-gold"
+            className="rounded bg-gold/90 px-2 py-1 text-[10px] font-bold text-[var(--th-on-accent)] transition hover:bg-gold"
           >
             + ახალი
           </button>
@@ -156,27 +158,27 @@ export default function TradePanel() {
       </div>
 
       {incoming.length === 0 && outgoing.length === 0 && (
-        <div className="text-xs text-parchment/30">აქტიური შეთავაზება არაა</div>
+        <div className="text-xs text-parchment/55">აქტიური შეთავაზება არაა</div>
       )}
 
       <div className="flex flex-col gap-2">
         {incoming.map((t) => {
           const { offer, request } = describe(t);
           return (
-            <div key={t.id} className="rounded-lg border border-gold/30 bg-gold/5 p-2 text-xs">
+            <div key={t.id} className="rounded-lg border border-gold/50 bg-[var(--th-panel)] p-2 text-xs">
               <div className="font-bold text-parchment">{t.fromName} გთავაზობს:</div>
               <div className="mt-1 text-parchment/70">იძლევა: {offer}</div>
               <div className="text-parchment/70">ითხოვს: {request}</div>
               <div className="mt-1.5 flex gap-1.5">
                 <button
                   onClick={() => respondTrade(t.id, true)}
-                  className="flex-1 rounded bg-gold px-2 py-1 font-bold text-ink transition hover:bg-[#e0b95c]"
+                  className="flex-1 rounded bg-gold px-2 py-1 font-bold text-[var(--th-on-accent)] transition hover:brightness-110"
                 >
                   დათანხმება
                 </button>
                 <button
                   onClick={() => respondTrade(t.id, false)}
-                  className="flex-1 rounded border border-white/15 px-2 py-1 text-parchment/70 transition hover:bg-white/5"
+                  className="flex-1 rounded border border-[var(--th-line-hi)] px-2 py-1 text-parchment/70 transition hover:bg-[var(--th-panel)]"
                 >
                   უარყოფა
                 </button>
@@ -187,13 +189,13 @@ export default function TradePanel() {
         {outgoing.map((t) => {
           const { offer, request } = describe(t);
           return (
-            <div key={t.id} className="rounded-lg border border-white/10 bg-black/20 p-2 text-xs">
+            <div key={t.id} className="rounded-lg border border-[var(--th-line)] bg-[var(--th-sunken)] p-2 text-xs">
               <div className="font-bold text-parchment">{t.toName}-ს ელოდება პასუხს</div>
               <div className="mt-1 text-parchment/70">იძლევა: {offer}</div>
               <div className="text-parchment/70">ითხოვს: {request}</div>
               <button
                 onClick={() => cancelTrade(t.id)}
-                className="mt-1.5 w-full rounded border border-white/15 px-2 py-1 text-parchment/70 transition hover:bg-white/5"
+                className="mt-1.5 w-full rounded border border-[var(--th-line-hi)] px-2 py-1 text-parchment/70 transition hover:bg-[var(--th-panel)]"
               >
                 გაუქმება
               </button>

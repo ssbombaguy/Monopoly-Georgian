@@ -22,11 +22,11 @@ export default function AuthPanel() {
         </span>
         <div className="min-w-0 flex-1 leading-tight">
           <div className="truncate text-sm font-bold text-parchment">{user.username}</div>
-          <div className="text-[11px] text-parchment/45">{user.wins} გამარჯვება · {user.gamesPlayed} თამაში</div>
+          <div className="text-[11px] text-parchment/55">{user.wins} გამარჯვება · {user.gamesPlayed} თამაში</div>
         </div>
         <button
           onClick={logout}
-          className="shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-parchment/40 transition hover:bg-white/5 hover:text-parchment/70"
+          className="shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-parchment/55 transition hover:bg-[var(--th-panel)] hover:text-parchment/70"
         >
           გასვლა
         </button>
@@ -36,18 +36,18 @@ export default function AuthPanel() {
 
   if (!mode) {
     return (
-      <div className="mb-4 rounded-xl border border-white/10 bg-white/5 p-3.5">
-        <span className="text-xs text-parchment/45">სტუმრობ · ანგარიშის გარეშე</span>
+      <div className="mb-4 rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] p-3.5">
+        <span className="text-xs text-parchment/55">სტუმრობ · ანგარიშის გარეშე</span>
         <div className="mt-2.5 flex gap-2">
           <button
             onClick={() => setMode('login')}
-            className="flex-1 rounded-lg border border-white/15 py-1.5 text-xs font-semibold text-parchment/70 transition hover:border-gold/40 hover:text-gold"
+            className="flex-1 rounded-lg border border-[var(--th-line-hi)] py-1.5 text-xs font-semibold text-parchment/70 transition hover:border-gold/40 hover:text-gold"
           >
             შესვლა
           </button>
           <button
             onClick={() => setMode('signup')}
-            className="flex-1 rounded-lg bg-gold/90 py-1.5 text-xs font-bold text-ink transition hover:bg-gold"
+            className="flex-1 rounded-lg bg-gold/90 py-1.5 text-xs font-bold text-[var(--th-on-accent)] transition hover:bg-gold"
           >
             რეგისტრაცია
           </button>
@@ -72,15 +72,15 @@ export default function AuthPanel() {
   };
 
   return (
-    <form onSubmit={submit} className="mb-4 rounded-xl border border-white/10 bg-white/5 p-4">
-      <div className="mb-3 flex rounded-lg border border-white/10 bg-black/20 p-0.5 text-xs font-semibold">
+    <form onSubmit={submit} className="mb-4 rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] p-4">
+      <div className="mb-3 flex rounded-lg border border-[var(--th-line)] bg-[var(--th-sunken)] p-0.5 text-xs font-semibold">
         {[['login', 'შესვლა'], ['signup', 'რეგისტრაცია']].map(([m, label]) => (
           <button
             key={m}
             type="button"
             onClick={() => setMode(m)}
             className={`flex-1 rounded px-3 py-1.5 transition ${
-              mode === m ? 'bg-gold text-ink' : 'text-parchment/50 hover:text-parchment/80'
+              mode === m ? 'bg-gold text-[var(--th-on-accent)]' : 'text-parchment/50 hover:text-parchment/80'
             }`}
           >
             {label}
@@ -94,7 +94,7 @@ export default function AuthPanel() {
           onChange={(e) => setUsername(e.target.value)}
           placeholder="სახელი"
           maxLength={20}
-          className="w-full rounded-lg border border-white/15 bg-black/30 p-2.5 text-sm text-parchment placeholder:text-parchment/30 focus:border-gold focus:outline-none"
+          className="w-full rounded-lg border border-[var(--th-line-hi)] bg-[var(--th-sunken-hi)] p-2.5 text-sm text-parchment placeholder:text-parchment/55 focus:border-gold focus:outline-none"
         />
         <div className="relative">
           <input
@@ -102,13 +102,13 @@ export default function AuthPanel() {
             onChange={(e) => setPassword(e.target.value)}
             type={showPassword ? 'text' : 'password'}
             placeholder="პაროლი"
-            className="w-full rounded-lg border border-white/15 bg-black/30 p-2.5 pr-10 text-sm text-parchment placeholder:text-parchment/30 focus:border-gold focus:outline-none"
+            className="w-full rounded-lg border border-[var(--th-line-hi)] bg-[var(--th-sunken-hi)] p-2.5 pr-10 text-sm text-parchment placeholder:text-parchment/55 focus:border-gold focus:outline-none"
           />
           <button
             type="button"
             onClick={() => setShowPassword((v) => !v)}
             tabIndex={-1}
-            className="absolute inset-y-0 right-0 grid w-9 place-items-center text-parchment/40 hover:text-parchment/70"
+            className="absolute inset-y-0 right-0 grid w-9 place-items-center text-parchment/55 hover:text-parchment/70"
           >
             {showPassword ? (
               <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -127,7 +127,7 @@ export default function AuthPanel() {
         <button
           type="submit"
           disabled={busy || !username.trim() || !password}
-          className="w-full rounded-lg bg-gold p-2.5 text-sm font-bold text-ink transition hover:bg-[#e0b95c] disabled:opacity-40"
+          className="w-full rounded-lg bg-gold p-2.5 text-sm font-bold text-[var(--th-on-accent)] transition hover:brightness-110 disabled:opacity-40"
         >
           {mode === 'signup' ? 'ანგარიშის შექმნა' : 'შესვლა'}
         </button>
@@ -138,7 +138,7 @@ export default function AuthPanel() {
       <button
         type="button"
         onClick={() => setMode(null)}
-        className="mt-3 w-full text-center text-xs text-parchment/40 hover:text-parchment/70"
+        className="mt-3 w-full text-center text-xs text-parchment/55 hover:text-parchment/70"
       >
         სტუმრად თამაში
       </button>

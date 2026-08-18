@@ -9,7 +9,7 @@ export default function GameCenter() {
     <main className="flex min-h-screen flex-col items-center justify-center gap-10 p-6">
       <div className="text-center">
         <div className="text-xs uppercase tracking-[0.4em] text-gold/70">სათამაშო ცენტრი</div>
-        <h1 className="mt-3 font-display text-5xl font-bold text-parchment">აირჩიე თამაში</h1>
+        <h1 className="mt-3 font-display text-3xl font-bold text-parchment sm:text-5xl">აირჩიე თამაში</h1>
         <div className="mx-auto mt-5 h-px w-24 bg-gold/50" />
       </div>
 
@@ -19,8 +19,8 @@ export default function GameCenter() {
             key={game.slug}
             href={game.available ? `/${game.slug}` : '#'}
             aria-disabled={!game.available}
-            className={`rounded-2xl border border-white/10 bg-white/5 p-6 text-center transition ${
-              game.available ? 'hover:border-gold/50 hover:bg-white/10' : 'pointer-events-none opacity-40'
+            className={`rounded-2xl border border-[var(--th-line)] bg-[var(--th-panel)] p-6 text-center transition ${
+              game.available ? 'hover:border-gold/50 hover:bg-[var(--th-panel-hi)]' : 'pointer-events-none opacity-40'
             }`}
           >
             <h2 className="font-display text-2xl font-bold text-parchment">{game.name}</h2>

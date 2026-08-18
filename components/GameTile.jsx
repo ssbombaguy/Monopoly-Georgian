@@ -5,6 +5,16 @@ import { GROUP_COLORS } from '../lib/board';
 
 const CORNERS = new Set(['go', 'jail', 'parking', 'gotojail']);
 
+// Every size in here is expressed against the board's own width (`cqw`, set up
+// by the @container on the grid in GameBoard) instead of fixed pixels, so the
+// tiles keep their printed-board proportions on a phone instead of overflowing
+// their cells. The board is 800px at its largest, which makes 1cqw === 8px —
+// so the desktop rendering is byte-for-byte what it always was.
+//
+// Text is allowed to shrink away; the pieces you actually have to see at a
+// glance (tokens, houses, colour bands) get a floor so they stay findable on
+// a 390px screen.
+
 // Houses sit on the color band, like the real plastic ones.
 const HOUSE_POS = {
   bottom: 'left-1/2 top-0 -translate-x-1/2 flex-row',
@@ -29,13 +39,18 @@ export default function GameTile({ tile, side, houses = 0, ownerColor, players, 
 
   const band = tile.group && (
     <div
-      className={`shrink-0 border-ink/25 ${vertical ? 'w-[7px] border-x' : 'h-[7px] border-y'}`}
+      className={`shrink-0 border-ink/25 ${
+        vertical ? 'w-[max(0.88cqw,4px)] border-x' : 'h-[max(0.88cqw,4px)] border-y'
+      }`}
       style={{ background: GROUP_COLORS[tile.group] }}
     />
   );
 
   const ownerStrip = ownerColor && (
-    <div className={`shrink-0 ${vertical ? 'w-[4px]' : 'h-[4px]'}`} style={{ background: ownerColor }} />
+    <div
+      className={`shrink-0 ${vertical ? 'w-[max(0.5cqw,2px)]' : 'h-[max(0.5cqw,2px)]'}`}
+      style={{ background: ownerColor }}
+    />
   );
 
   let content;
@@ -50,27 +65,27 @@ export default function GameTile({ tile, side, houses = 0, ownerColor, players, 
             top: '32%' 
           }}
         >
-          <span className="text-[7.5px] font-bold tracking-tight">აიღე</span>
-          <span className="text-[7.5px] font-bold tracking-tight">₾200 ხელფასი</span>
-          <span className="text-[7.5px] font-bold tracking-tight">გავლისას</span>
+          <span className="text-[0.94cqw] font-bold tracking-tight @max-[520px]:hidden">აიღე</span>
+          <span className="text-[0.94cqw] font-bold tracking-tight @max-[520px]:hidden">₾200 ხელფასი</span>
+          <span className="text-[0.94cqw] font-bold tracking-tight @max-[520px]:hidden">გავლისას</span>
         </div>
-        
-        <div 
-          className="absolute text-[48px] font-black leading-none text-[#ed1b24]" 
-          style={{ 
-            WebkitTextStroke: '2px #000', 
+
+        <div
+          className="absolute text-[6cqw] font-black leading-none text-[#ed1b24]"
+          style={{
+            WebkitTextStroke: 'max(0.25cqw, 1px) #000',
             paintOrder: 'stroke fill',
             fontFamily: 'sans-serif',
             transform: 'translate(-50%, -50%) rotate(-45deg)',
             left: '52%',
             top: '56%',
-            letterSpacing: '-2px'
+            letterSpacing: '-0.25cqw'
           }}
         >
           GO
         </div>
         
-        <div className="absolute bottom-1.5 left-0 right-0 w-full px-1.5">
+        <div className="absolute bottom-[1.5cqw] left-0 right-0 w-full px-[1.5cqw]">
           <svg viewBox="0 0 100 24" className="h-auto w-full drop-shadow-[0_1.5px_0_rgba(0,0,0,1)]">
             <path 
               d="M 4,12 L 20,2 L 20,7.5 L 98,7.5 L 84,12 L 98,16.5 L 20,16.5 L 20,22 Z" 
@@ -87,7 +102,7 @@ export default function GameTile({ tile, side, houses = 0, ownerColor, players, 
     content = (
       <div className="relative flex h-full w-full items-center justify-center overflow-hidden text-ink">
         <div 
-          className="absolute text-[7.5px] font-black tracking-widest text-[#0c4a8a]"
+          className="absolute text-[0.94cqw] font-black tracking-widest text-[color-mix(in_srgb,var(--bd-ink)_68%,#1d4ed8)] @max-[520px]:hidden"
           style={{ 
             transform: 'translate(-50%, -50%) rotate(-45deg)', 
             left: '24%', 
@@ -147,7 +162,7 @@ export default function GameTile({ tile, side, houses = 0, ownerColor, players, 
         </div>
 
         <div 
-          className="absolute text-[7.5px] font-black tracking-widest text-[#0c4a8a]"
+          className="absolute text-[0.94cqw] font-black tracking-widest text-[color-mix(in_srgb,var(--bd-ink)_68%,#1d4ed8)] @max-[520px]:hidden"
           style={{ 
             transform: 'translate(-50%, -50%) rotate(-45deg)', 
             left: '76%', 
@@ -162,7 +177,7 @@ export default function GameTile({ tile, side, houses = 0, ownerColor, players, 
     content = (
       <div className="relative flex h-full w-full items-center justify-center overflow-hidden text-ink">
         <div 
-          className="absolute text-[8.5px] font-black tracking-widest text-[#222]"
+          className="absolute text-[1.06cqw] font-black tracking-widest text-ink @max-[520px]:hidden"
           style={{ transform: 'translate(-50%, -50%) rotate(-45deg)', left: '23%', top: '23%' }}
         >
           წადი
@@ -176,7 +191,7 @@ export default function GameTile({ tile, side, houses = 0, ownerColor, players, 
         </div>
 
         <div 
-          className="absolute text-[8.5px] font-black tracking-widest text-[#222]"
+          className="absolute text-[1.06cqw] font-black tracking-widest text-ink @max-[520px]:hidden"
           style={{ transform: 'translate(-50%, -50%) rotate(-45deg)', left: '77%', top: '77%' }}
         >
           ციხეში
@@ -187,7 +202,7 @@ export default function GameTile({ tile, side, houses = 0, ownerColor, players, 
     content = (
       <div className="relative flex h-full w-full items-center justify-center overflow-hidden text-ink">
         <div 
-          className="absolute text-[8px] font-black tracking-widest text-[#222]"
+          className="absolute text-[1cqw] font-black tracking-widest text-ink @max-[520px]:hidden"
           style={{ transform: 'translate(-50%, -50%) rotate(-45deg)', left: '20%', top: '20%' }}
         >
           ციხე
@@ -201,7 +216,7 @@ export default function GameTile({ tile, side, houses = 0, ownerColor, players, 
         </div>
 
         <div 
-          className="absolute text-[7px] font-black tracking-widest text-[#222]"
+          className="absolute text-[0.88cqw] font-black tracking-widest text-ink @max-[520px]:hidden"
           style={{ transform: 'translate(-50%, -50%) rotate(-45deg)', left: '80%', top: '80%' }}
         >
           სტუმრად
@@ -210,25 +225,34 @@ export default function GameTile({ tile, side, houses = 0, ownerColor, players, 
     );
   } else if (isCorner) {
     content = (
-      <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1 p-1 text-center">
-        <TileIcon name={tile.icon} className="h-7 w-7 text-ink/80" />
-        <span className="text-[8px] font-bold leading-[1.05] tracking-tight">{tile.name}</span>
+      <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-[0.5cqw] p-[0.5cqw] text-center">
+        <TileIcon name={tile.icon} className="h-[3.5cqw] w-[3.5cqw] text-ink/80" />
+        <span className="text-[1cqw] font-bold leading-[1.05] tracking-tight @max-[520px]:hidden">{tile.name}</span>
       </div>
     );
   } else if (tile.group) {
+    // Georgian street names are long; below phone size they turn to mush and
+    // the colour band carries the identity instead. The price stays — it's the
+    // one number you check before deciding to buy.
     content = (
-      <div className="flex min-w-0 flex-1 flex-col justify-between p-[3px]">
-        <span className="font-display text-center text-[8px] font-bold leading-[1.1] tracking-tight">{tile.name}</span>
-        <span className="text-center font-mono text-[8px] font-bold text-ink/65">₾{tile.price}</span>
+      <div className="flex min-w-0 flex-1 flex-col justify-between p-[0.4cqw]">
+        <span className="font-display text-center text-[1cqw] font-bold leading-[1.1] tracking-tight @max-[520px]:hidden">
+          {tile.name}
+        </span>
+        <span className="text-center font-mono text-[max(1cqw,6px)] font-bold text-ink/65 @max-[520px]:mt-auto">
+          ₾{tile.price}
+        </span>
       </div>
     );
   } else {
     content = (
       <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-0 p-px text-center">
-        <TileIcon name={tile.icon} className="h-[42px] w-[42px] text-ink/85 drop-shadow-sm" />
-        <span className="font-display text-[7.5px] font-bold leading-[1] tracking-tight">{tile.name}</span>
-        {tile.price && <span className="font-mono text-[7px] font-semibold text-ink/70">₾{tile.price}</span>}
-        {tile.amount && <span className="font-mono text-[7px] font-semibold text-ink/70">₾{tile.amount}</span>}
+        <TileIcon name={tile.icon} className="h-[5.25cqw] w-[5.25cqw] text-ink/85 drop-shadow-sm" />
+        <span className="font-display text-[0.94cqw] font-bold leading-[1] tracking-tight @max-[520px]:hidden">
+          {tile.name}
+        </span>
+        {tile.price && <span className="font-mono text-[0.88cqw] font-semibold text-ink/70 @max-[520px]:hidden">₾{tile.price}</span>}
+        {tile.amount && <span className="font-mono text-[0.88cqw] font-semibold text-ink/70 @max-[520px]:hidden">₾{tile.amount}</span>}
       </div>
     );
   }
@@ -236,7 +260,7 @@ export default function GameTile({ tile, side, houses = 0, ownerColor, players, 
   return (
     <div
       style={style}
-      className={`relative flex overflow-hidden text-ink ${vertical ? 'flex-row' : 'flex-col'} ${tile.type === 'go' ? 'bg-[#dce9de]' : tile.type === 'parking' ? 'bg-[#f4f7f0]' : tile.type === 'gotojail' ? 'bg-[#cbe8d5]' : tile.type === 'jail' ? 'bg-orange-100' : 'bg-parchment'}`}
+      className={`relative flex overflow-hidden text-ink ${vertical ? 'flex-row' : 'flex-col'} ${tile.type === 'go' ? 'bg-[var(--bd-go)]' : tile.type === 'parking' ? 'bg-[var(--bd-parking)]' : tile.type === 'gotojail' ? 'bg-[var(--bd-gotojail)]' : tile.type === 'jail' ? 'bg-[var(--bd-jail)]' : 'bg-[var(--bd-face)]'}`}
     >
       {/* owned tiles get a wash of the owner's color so holdings read at a glance */}
       {ownerColor && (
@@ -251,7 +275,7 @@ export default function GameTile({ tile, side, houses = 0, ownerColor, players, 
       {houses > 0 && tile.group && (
         <div className={`absolute z-10 flex gap-[2px] ${HOUSE_POS[side]}`}>
           {houses === 5 ? (
-            <svg viewBox="0 0 18 12" className={`w-[20px] h-[14px] overflow-visible drop-shadow-[0_2.5px_2px_rgba(0,0,0,0.9)] ${HOUSE_ROTATION[side]}`}>
+            <svg viewBox="0 0 18 12" className={`w-[max(2.5cqw,11px)] h-[max(1.75cqw,8px)] overflow-visible drop-shadow-[0_2.5px_2px_rgba(0,0,0,0.9)] ${HOUSE_ROTATION[side]}`}>
               <path d="M 13.5,1 L 13.5,4 L 15.5,4 L 15.5,1 Z" fill="#e11d48" stroke="#4c0519" strokeWidth="1" strokeLinejoin="round"/>
               <path d="M 1.5,5 L 1.5,11 L 16.5,11 L 16.5,5 L 9,1 Z" fill="#e11d48" stroke="#4c0519" strokeWidth="1" strokeLinejoin="round"/>
               <rect x="3.5" y="6.5" width="2.5" height="2.5" fill="#4c0519" />
@@ -260,7 +284,7 @@ export default function GameTile({ tile, side, houses = 0, ownerColor, players, 
             </svg>
           ) : (
             Array.from({ length: houses }, (_, k) => (
-              <svg key={k} viewBox="0 0 12 12" className={`w-[14px] h-[14px] overflow-visible drop-shadow-[0_2.5px_2px_rgba(0,0,0,0.9)] ${HOUSE_ROTATION[side]}`}>
+              <svg key={k} viewBox="0 0 12 12" className={`w-[max(1.75cqw,8px)] h-[max(1.75cqw,8px)] overflow-visible drop-shadow-[0_2.5px_2px_rgba(0,0,0,0.9)] ${HOUSE_ROTATION[side]}`}>
                 <path d="M 1.5,6 L 1.5,11 L 10.5,11 L 10.5,6 L 6,1.5 Z" fill="#16a34a" stroke="#064e3b" strokeWidth="1" strokeLinejoin="round"/>
                 <rect x="4.5" y="7" width="3" height="3" fill="#064e3b" />
               </svg>
@@ -281,7 +305,7 @@ export default function GameTile({ tile, side, houses = 0, ownerColor, players, 
               layout: { type: 'spring', stiffness: 300, damping: 25 },
               y: { duration: 0.25 } 
             }}
-            className="grid h-4 w-4 place-items-center rounded-full text-[10px] leading-none ring-1 ring-white/80 shadow-md"
+            className="grid h-[max(2cqw,13px)] w-[max(2cqw,13px)] place-items-center rounded-full text-[max(1.25cqw,8px)] leading-none ring-1 ring-white/80 shadow-md"
             style={{ background: p.color }}
           >
             {p.token}

@@ -20,7 +20,7 @@ const SECTIONS = [
   {
     icon: '💰',
     title: 'ქირა',
-    body: 'სხვისი საკუთრების უჯრაზე დადგომისას ქირა ავტომატურად გადაიხდება მფლობელს — ღილაკი არ სჭირდება.',
+    body: 'სხვისი საკუთრების უჯრაზე დადგომისას გამოჩნდება გადახდის ფანჯარა. დააჭირე „გადახდას" — ან დაელოდე ტაიმერს და ავტომატურად გადაიხდება. ჰოსტს შეუძლია ავტო-გადახდის დრო შეცვალოს ან სულ გამორთოს (0წმ = მხოლოდ ღილაკით).',
   },
   {
     icon: '🏗️',
@@ -29,8 +29,8 @@ const SECTIONS = [
   },
   {
     icon: '🏦',
-    title: 'იპოთეკა',
-    body: 'ფულის დასაგროვებლად შეგიძლია საკუთრება დააგირავო (ნახევარი ფასი მიიღებ). დაგირავებული საკუთრება ქირას არ იღებს. გამოსასყიდად გადაიხდი ღირებულებას +10%-ს.',
+    title: 'იპოთეკა და სახლების გაყიდვა',
+    body: 'ფულის დასაგროვებლად შეგიძლია საკუთრება დააგირავო (ნახევარი ფასი მიიღებ). დაგირავებული საკუთრება ქირას არ იღებს. გამოსასყიდად გადაიხდი ღირებულებას +10%-ს. სახლებს ნახევარ ფასად ყიდი — ჯგუფში თანაბრად, ყველაზე მაღლიდან დაწყებული.',
   },
   {
     icon: '🤝',
@@ -49,8 +49,8 @@ const SECTIONS = [
   },
   {
     icon: '💸',
-    title: 'გაკოტრება',
-    body: 'თუ ვერ იხდი ვალს, გაკოტრდები — მთელი შენი საკუთრება ცალ-ცალკე აუქციონზე გავა დარჩენილ მოთამაშეებზე.',
+    title: 'თუ ფული არ გყოფნის',
+    body: 'ქონება ავტომატურად არასდროს იყიდება. თუ თანხა არ გყოფნის, დრო გეძლევა — გაყიდე სახლები, დააგირავე ქუჩები ან ივაჭრე. გაკოტრდები მხოლოდ მაშინ, თუ თვითონ დანებდები, ან დრო ამოგეწურება ვალის დაუფარავად. მაშინ დარჩენილ ფულს კრედიტორი იღებს, საკუთრება კი ცალ-ცალკე აუქციონზე გავა.',
   },
   {
     icon: '🏆',
@@ -66,7 +66,7 @@ export default function RulesGuide() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 rounded-lg border border-white/15 px-3 py-1.5 text-xs font-semibold text-parchment/70 transition hover:border-gold/40 hover:text-gold"
+        className="flex items-center gap-1.5 rounded-lg border border-[var(--th-line-hi)] px-3 py-1.5 text-xs font-semibold text-parchment/70 transition hover:border-gold/40 hover:text-gold"
       >
         <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="9" />
@@ -80,13 +80,13 @@ export default function RulesGuide() {
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4" onClick={() => setOpen(false)}>
           <div
             onClick={(e) => e.stopPropagation()}
-            className="scroll-thin flex max-h-[85vh] w-full max-w-lg flex-col rounded-2xl border border-gold/30 bg-[#1c1512] shadow-2xl"
+            className="scroll-thin flex max-h-[88svh] w-full max-w-lg flex-col rounded-2xl border border-gold/30 bg-[var(--th-modal)] shadow-2xl"
           >
-            <div className="flex items-center justify-between border-b border-white/10 p-5 pb-4">
+            <div className="flex items-center justify-between border-b border-[var(--th-line)] p-5 pb-4">
               <h2 className="font-display text-xl font-bold text-parchment">როგორ ვითამაშოთ მონოპოლია</h2>
               <button
                 onClick={() => setOpen(false)}
-                className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-parchment/50 transition hover:bg-white/10 hover:text-parchment"
+                className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-parchment/50 transition hover:bg-[var(--th-panel-hi)] hover:text-parchment"
               >
                 ✕
               </button>

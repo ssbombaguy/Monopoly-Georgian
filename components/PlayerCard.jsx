@@ -13,8 +13,8 @@ export default function PlayerCard({ player, isActive, isMe, owned = [], room, o
       animate={{ scale: isActive ? 1.02 : 1 }}
       className={`rounded-xl border p-3 ${
         isActive
-          ? 'border-gold bg-gold/10 shadow-[0_0_20px_rgba(212,169,75,0.15)]'
-          : 'border-white/10 bg-white/5'
+          ? 'border-gold bg-[var(--th-panel)] shadow-[0_0_20px_rgba(212,169,75,0.2)] ring-1 ring-gold/30'
+          : 'border-[var(--th-line)] bg-[var(--th-panel)]'
       } ${player.bankrupt ? 'opacity-40' : ''}`}
     >
       <div className="flex items-center gap-2.5">
@@ -28,7 +28,7 @@ export default function PlayerCard({ player, isActive, isMe, owned = [], room, o
           {player.name} {isMe && <span className="text-parchment/50">· მე</span>}
         </span>
         {player.connected === false && (
-          <span className="shrink-0 text-[10px] text-amber-400/80" title="კავშირი გაწყდა — უბრუნდება">● კავშირი წყდება</span>
+          <span className="shrink-0 text-[10px] text-[var(--th-rent)]" title="კავშირი გაწყდა — უბრუნდება">● კავშირი წყდება</span>
         )}
         {isActive && <span className="ml-auto shrink-0 text-[10px] uppercase tracking-widest text-gold">სვლა</span>}
       </div>
@@ -37,11 +37,11 @@ export default function PlayerCard({ player, isActive, isMe, owned = [], room, o
         <span className="font-mono text-xl text-parchment">
           {player.bankrupt ? 'გაკოტრდა' : `₾${player.cash.toLocaleString('ka-GE')}`}
         </span>
-        {player.inJail && <span className="text-[10px] text-violet-300">🚔 ციხეში {player.jailRolls}/3</span>}
+        {player.inJail && <span className="text-[10px] text-[var(--th-jail)]">🚔 ციხეში {player.jailRolls}/3</span>}
         {isMe && !player.bankrupt && room.status === 'playing' && (
           <button
             onClick={() => setConfirmingSurrender(true)}
-            className="ml-auto flex shrink-0 items-center gap-1 rounded px-1.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-parchment/40 transition hover:bg-red-500/10 hover:text-red-400"
+            className="ml-auto flex shrink-0 items-center gap-1 rounded px-1.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-parchment/55 transition hover:bg-red-500/10 hover:text-red-400"
           >
             <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3" />
@@ -54,8 +54,8 @@ export default function PlayerCard({ player, isActive, isMe, owned = [], room, o
       </div>
 
       {owned.length > 0 && (
-        <div className="mt-2 border-t border-white/10 pt-2">
-          <div className="mb-1.5 flex justify-between text-[9px] uppercase tracking-wider text-parchment/40">
+        <div className="mt-2 border-t border-[var(--th-line)] pt-2">
+          <div className="mb-1.5 flex justify-between text-[9px] uppercase tracking-wider text-parchment/55">
             <span>ქონება</span>
             <span>{owned.length}</span>
           </div>
@@ -80,7 +80,7 @@ export default function PlayerCard({ player, isActive, isMe, owned = [], room, o
       <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4" onClick={() => setConfirmingSurrender(false)}>
         <div
           onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-sm rounded-2xl border border-red-500/30 bg-[#1c1512] p-6 shadow-2xl"
+          className="w-full max-w-sm rounded-2xl border border-red-500/30 bg-[var(--th-modal)] p-6 shadow-2xl"
         >
           <h2 className="font-display text-xl font-bold text-parchment">დანებება?</h2>
           <p className="mt-2 text-sm text-parchment/60">
@@ -89,7 +89,7 @@ export default function PlayerCard({ player, isActive, isMe, owned = [], room, o
           <div className="mt-5 flex gap-2.5">
             <button
               onClick={() => setConfirmingSurrender(false)}
-              className="flex-1 rounded-lg border border-white/15 py-2.5 font-bold text-parchment/70 transition hover:bg-white/5"
+              className="flex-1 rounded-lg border border-[var(--th-line-hi)] py-2.5 font-bold text-parchment/70 transition hover:bg-[var(--th-panel)]"
             >
               გაუქმება
             </button>

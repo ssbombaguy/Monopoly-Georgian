@@ -6,6 +6,7 @@ import { useGameStore } from '../../store/gameStore';
 import { useAuthStore } from '../../store/authStore';
 import AuthPanel from '../../components/AuthPanel';
 import RulesGuide from '../../components/RulesGuide';
+import ThemePicker from '../../components/ThemePicker';
 
 export default function MonopolyLobby() {
   const router = useRouter();
@@ -26,14 +27,17 @@ export default function MonopolyLobby() {
     <main className="flex min-h-screen flex-col items-center justify-center gap-8 p-6">
       <div className="text-center">
         <div className="text-xs uppercase tracking-[0.4em] text-gold/70">ქართული სუფრის თამაში</div>
-        <h1 className="mt-3 font-display text-6xl font-bold text-parchment">მონოპოლია</h1>
+        <h1 className="mt-3 font-display text-4xl font-bold text-parchment sm:text-6xl">მონოპოლია</h1>
         <div className="mx-auto mt-5 h-px w-24 bg-gold/50" />
         <div className="mt-5">
-          <RulesGuide />
+          <div className="flex flex-wrap justify-center gap-2">
+            <RulesGuide />
+            <ThemePicker />
+          </div>
         </div>
       </div>
 
-      <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-white/5 p-6">
+      <div className="w-full max-w-sm rounded-2xl border border-[var(--th-line)] bg-[var(--th-panel)] p-6">
         <AuthPanel />
 
         {!user && (
@@ -44,7 +48,7 @@ export default function MonopolyLobby() {
               onChange={(e) => setName(e.target.value)}
               placeholder="მაგ. ნიკა"
               maxLength={20}
-              className="mb-4 mt-1 w-full rounded-lg border border-white/15 bg-black/30 p-2.5 text-parchment placeholder:text-parchment/30 focus:border-gold focus:outline-none"
+              className="mb-4 mt-1 w-full rounded-lg border border-[var(--th-line-hi)] bg-[var(--th-sunken-hi)] p-2.5 text-parchment placeholder:text-parchment/55 focus:border-gold focus:outline-none"
             />
           </>
         )}
@@ -52,15 +56,15 @@ export default function MonopolyLobby() {
         <button
           onClick={() => effectiveName.trim() && createRoom(effectiveName)}
           disabled={!effectiveName.trim()}
-          className="w-full rounded-lg bg-gold p-3 font-bold text-ink transition hover:bg-[#e0b95c] disabled:opacity-40"
+          className="w-full rounded-lg bg-gold p-3 font-bold text-[var(--th-on-accent)] transition hover:brightness-110 disabled:opacity-40"
         >
           ოთახის შექმნა
         </button>
 
-        <div className="my-4 flex items-center gap-3 text-[10px] uppercase tracking-widest text-parchment/40">
-          <span className="h-px flex-1 bg-white/10" />
+        <div className="my-4 flex items-center gap-3 text-[10px] uppercase tracking-widest text-parchment/55">
+          <span className="h-px flex-1 bg-[var(--th-panel-hi)]" />
           ან
-          <span className="h-px flex-1 bg-white/10" />
+          <span className="h-px flex-1 bg-[var(--th-panel-hi)]" />
         </div>
 
         <div className="flex gap-2">
@@ -69,7 +73,7 @@ export default function MonopolyLobby() {
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder="კოდი"
             maxLength={4}
-            className="w-24 rounded-lg border border-white/15 bg-black/30 p-2.5 text-center font-mono uppercase text-parchment placeholder:text-parchment/30 focus:border-gold focus:outline-none"
+            className="w-24 rounded-lg border border-[var(--th-line-hi)] bg-[var(--th-sunken-hi)] p-2.5 text-center font-mono uppercase text-parchment placeholder:text-parchment/55 focus:border-gold focus:outline-none"
           />
           <button
             onClick={() => effectiveName.trim() && code.trim() && joinRoom(code, effectiveName)}

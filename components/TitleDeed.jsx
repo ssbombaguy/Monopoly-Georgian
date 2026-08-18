@@ -19,7 +19,7 @@ function Row({ label, value, highlight }) {
 // holdings listed on each player card (compact).
 export default function TitleDeed({ index, room, compact = false, onClick }) {
   const myId = useGameStore((s) => s.myId);
-  const { mortgageProperty, unmortgageProperty } = useGameSocket();
+  const { mortgageProperty, unmortgageProperty, sellHouse } = useGameSocket();
 
   const tile = TILES[index];
   if (!tile?.price) return null;
@@ -34,11 +34,19 @@ export default function TitleDeed({ index, room, compact = false, onClick }) {
     TILES.every((t, i) => t.group !== tile.group || room.properties[i] === owner.id);
   const currentRent = owner ? rentFor(room, index) : null;
   const unmortgageCost = Math.ceil(tile.mortgage * 1.1);
+  // Houses sell back at half price, and only off the tallest street in the
+  // set — the build-evenly rule in reverse, matching what the server accepts.
+  const canSellHouse =
+    houses > 0 &&
+    houses >= Math.max(...TILES.map((t, i) => (t.group === tile.group ? room.houses?.[i] || 0 : 0)));
+  // Paying down a debt is the one thing that still works mid-charge; buying
+  // deeds back is not, so don't offer a button the server will refuse.
+  const owingMoney = room.pendingPayment?.playerId === myId;
 
   return (
     <div
       onClick={onClick}
-      className={`w-full overflow-hidden rounded-md border border-ink/30 bg-white shadow-lg ${onClick ? 'cursor-pointer' : ''}`}
+      className={`w-full overflow-hidden rounded-md border border-ink/30 bg-[var(--bd-card)] shadow-lg ${onClick ? 'cursor-pointer' : ''}`}
     >
       <div
         className={`${compact ? 'px-2 py-1 text-center' : 'px-3 py-1.5 text-center'} ${mortgaged ? 'opacity-50' : ''}`}
@@ -101,17 +109,27 @@ export default function TitleDeed({ index, room, compact = false, onClick }) {
         )}
 
         {!compact && owner?.id === myId && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (mortgaged) unmortgageProperty(index);
-              else mortgageProperty(index);
-            }}
-            disabled={!mortgaged && houses > 0}
-            className="mt-1.5 w-full rounded bg-ink/10 py-1 text-[10px] font-bold text-ink transition hover:bg-ink/20 disabled:opacity-30 disabled:hover:bg-ink/10"
-          >
-            {mortgaged ? `გამოსყიდვა · ₾${unmortgageCost}` : `დაგირავება · +₾${tile.mortgage}`}
-          </button>
+          <div className="mt-1.5 flex flex-col gap-1">
+            {canSellHouse && (
+              <button
+                onClick={(e) => { e.stopPropagation(); sellHouse(index); }}
+                className="w-full rounded bg-ink/10 py-1 text-[10px] font-bold text-ink transition hover:bg-ink/20"
+              >
+                {houses === 5 ? 'სასტუმროს გაყიდვა' : 'სახლის გაყიდვა'} · +₾{Math.floor(tile.houseCost / 2)}
+              </button>
+            )}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (mortgaged) unmortgageProperty(index);
+                else mortgageProperty(index);
+              }}
+              disabled={mortgaged ? owingMoney : houses > 0}
+              className="w-full rounded bg-ink/10 py-1 text-[10px] font-bold text-ink transition hover:bg-ink/20 disabled:opacity-30 disabled:hover:bg-ink/10"
+            >
+              {mortgaged ? `გამოსყიდვა · ₾${unmortgageCost}` : `დაგირავება · +₾${tile.mortgage}`}
+            </button>
+          </div>
         )}
       </div>
 
