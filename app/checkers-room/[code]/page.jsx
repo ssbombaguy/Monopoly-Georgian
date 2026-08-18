@@ -161,51 +161,63 @@ export default function CheckersRoomPage({ params }) {
       </Link>
 
       <div className="text-center">
-        {room.status === 'finished' ? (
-          <p className="font-display text-xl font-bold text-gold">
-            {room.winnerId === myId ? 'გაიმარჯვეთ!' : `${room.players.find((p) => p.id === room.winnerId)?.name ?? 'მოწინააღმდეგე'} გაიმარჯვა!`}
-          </p>
-        ) : (
-          <p className="text-sm text-parchment/70">
-            {me && (
-              <>
-                თქვენ: <span className="font-bold text-parchment">{LABEL[me.color]}</span> ·{' '}
-              </>
-            )}
-            სვლა: <span className="font-bold text-parchment">{LABEL[room.turn]}</span>
-            {room.turn === me?.color && <span className="ml-2 text-gold/80">— თქვენი სვლაა</span>}
-            {opponent && !opponent.connected && <span className="ml-2 text-red-400/80">— {opponent.name} გათიშულია</span>}
-          </p>
+        <p className="text-sm text-parchment/70">
+          {me && (
+            <>
+              თქვენ: <span className="font-bold text-parchment">{LABEL[me.color]}</span> ·{' '}
+            </>
+          )}
+          სვლა: <span className="font-bold text-parchment">{LABEL[room.turn]}</span>
+          {room.turn === me?.color && room.status === 'playing' && <span className="ml-2 text-gold/80">— თქვენი სვლაა</span>}
+          {opponent && !opponent.connected && <span className="ml-2 text-red-400/80">— {opponent.name} გათიშულია</span>}
+        </p>
+      </div>
+
+      <div className="relative" style={{ width: 'min(94vw, 720px)' }}>
+        <Checkers
+          board={room.board}
+          turn={room.turn}
+          chainFrom={room.chainFrom}
+          myColor={room.status === 'playing' ? me?.color : null}
+          allowBackCapture={!!room.settings?.allowBackCapture}
+          onMove={(from, to) => move(from, to)}
+        />
+
+        {room.status === 'finished' && (
+          <div className="absolute inset-0 z-20 grid place-items-center rounded-lg bg-black/60 p-6">
+            <div className="flex w-full max-w-xs flex-col items-center gap-3 rounded-xl border-2 border-gold bg-felt px-6 py-5 text-center shadow-2xl">
+              <div className="font-display text-xl font-bold text-gold sm:text-2xl">
+                🏆 {room.winnerId === myId ? 'გაიმარჯვეთ!' : `${room.players.find((p) => p.id === room.winnerId)?.name ?? 'მოწინააღმდეგე'} გაიმარჯვა!`}
+              </div>
+              {isHost ? (
+                <button
+                  onClick={replay}
+                  className="min-h-11 w-full rounded-lg bg-gold px-4 py-2.5 text-sm font-bold text-[var(--th-on-accent)] shadow-lg transition hover:brightness-110"
+                >
+                  თავიდან დაწყება
+                </button>
+              ) : (
+                <div className="text-sm text-parchment/50">ველოდებით ჰოსტს — თავიდან დაწყება ან გასვლა</div>
+              )}
+              <button
+                onClick={leave}
+                className="min-h-11 w-full rounded-lg border border-parchment/20 px-4 py-2 text-xs font-semibold text-parchment/70 transition hover:border-parchment/40 hover:bg-[var(--th-panel)] hover:text-parchment"
+              >
+                გასვლა მთავარ გვერდზე
+              </button>
+            </div>
+          </div>
         )}
       </div>
 
-      <Checkers
-        board={room.board}
-        turn={room.turn}
-        chainFrom={room.chainFrom}
-        myColor={room.status === 'playing' ? me?.color : null}
-        allowBackCapture={!!room.settings?.allowBackCapture}
-        onMove={(from, to) => move(from, to)}
-      />
-
-      <div className="flex gap-3">
-        {room.status === 'playing' && (
-          <button
-            onClick={surrender}
-            className="rounded-lg border border-red-400/40 px-4 py-2 text-sm font-bold text-red-400 transition hover:bg-red-400/10"
-          >
-            დანებება
-          </button>
-        )}
-        {room.status === 'finished' && isHost && (
-          <button
-            onClick={replay}
-            className="rounded-lg border border-gold/40 px-4 py-2 text-sm font-bold text-gold transition hover:bg-gold/10"
-          >
-            თავიდან დაწყება
-          </button>
-        )}
-      </div>
+      {room.status === 'playing' && (
+        <button
+          onClick={surrender}
+          className="rounded-lg border border-red-400/40 px-4 py-2 text-sm font-bold text-red-400 transition hover:bg-red-400/10"
+        >
+          დანებება
+        </button>
+      )}
       {error && <p className="text-sm text-red-400">{error}</p>}
     </main>
   );

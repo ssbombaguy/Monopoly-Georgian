@@ -70,7 +70,12 @@ export default function Checkers({ board, turn, chainFrom, myColor, allowBackCap
   return (
     <div
       className="grid overflow-hidden rounded-lg border border-[var(--th-line)] shadow-2xl"
-      style={{ gridTemplateColumns: `repeat(${SIZE}, minmax(0, 1fr))`, width: 'min(94vw, 720px)', aspectRatio: '1 / 1' }}
+      style={{
+        gridTemplateColumns: `repeat(${SIZE}, minmax(0, 1fr))`,
+        gridTemplateRows: `repeat(${SIZE}, minmax(0, 1fr))`,
+        width: 'min(94vw, 720px)',
+        aspectRatio: '1 / 1',
+      }}
     >
       {rows.map((r) =>
         cols.map((c) => {

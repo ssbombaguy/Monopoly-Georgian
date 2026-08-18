@@ -63,4 +63,29 @@ import { createInitialBoard, getLegalMoves, applyMove, hasAnyCaptureFrom } from 
   assert.strictEqual(after[3][2], null);
 }
 
+// Flying king: slides any distance for a simple move.
+{
+  const board = Array.from({ length: 8 }, () => Array(8).fill(null));
+  board[4][4] = { color: 'black', king: true };
+  const moves = getLegalMoves(board, 'black');
+  assert.ok(moves.every((m) => !m.isCapture));
+  assert.ok(moves.some((m) => m.to.r === 0 && m.to.c === 0)); // 4 squares away
+  assert.ok(moves.some((m) => m.to.r === 7 && m.to.c === 7)); // 3 squares the other way
+}
+
+// Flying king capture: can jump an enemy from a distance and choose how far
+// beyond it to land; can't land past a second piece in the same line.
+{
+  const board = Array.from({ length: 8 }, () => Array(8).fill(null));
+  board[0][0] = { color: 'black', king: true };
+  board[4][4] = { color: 'white', king: false };
+  board[6][6] = { color: 'white', king: false }; // blocks landing past (5,5)
+  const moves = getLegalMoves(board, 'black');
+  assert.ok(moves.every((m) => m.isCapture));
+  const landings = moves.map((m) => `${m.to.r},${m.to.c}`).sort();
+  assert.deepStrictEqual(landings, ['5,5']); // only square between the two white pieces
+  const after = applyMove(board, moves[0]);
+  assert.strictEqual(after[4][4], null);
+}
+
 console.log('checkers selftest: OK');
