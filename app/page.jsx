@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 const games = [
   { slug: 'monopoly', name: 'მონოპოლია', desc: 'ქართული სამაგიდო თამაში', available: true },
+  { slug: 'checkers', name: 'შაშკი', desc: 'მინი თამაში — შექმენი ოთახი და ითამაშე ონლაინ', available: true },
 ];
 
 export default function GameCenter() {

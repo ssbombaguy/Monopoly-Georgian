@@ -42,7 +42,7 @@ export default function RootLayout({ children }) {
   return (
     // data-theme is set here too so the server markup and the pre-paint script
     // agree; the script only changes it when a different theme was saved.
-    <html lang="ka" data-theme={DEFAULT_THEME} className={`${sansKa.variable} ${serifKa.variable}`}>
+    <html lang="ka" data-theme={DEFAULT_THEME} className={`${sansKa.variable} ${serifKa.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
       </head>

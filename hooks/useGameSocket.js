@@ -1,27 +1,8 @@
 'use client';
 import { useEffect } from 'react';
-import { io } from 'socket.io-client';
+import { getSocket, getSessionId } from '../lib/socket';
 import { useGameStore } from '../store/gameStore';
 import { useAuthStore } from '../store/authStore';
-
-// Module-level singleton: one connection per tab, survives re-renders and
-// route changes. Multiple components calling this hook share it.
-let socket = null;
-
-// Stable per-tab identity, independent of the ephemeral socket.id — a page
-// refresh gets a new socket.id but keeps this, so the server recognizes it
-// as the same player instead of a stranger (see gameSocket.js reconnect
-// logic). sessionStorage (not localStorage) so two tabs are still two
-// separate players, matching how it already behaved before refresh support.
-function getSessionId() {
-  if (typeof window === 'undefined') return undefined;
-  let id = sessionStorage.getItem('monopoly-session');
-  if (!id) {
-    id = crypto.randomUUID();
-    sessionStorage.setItem('monopoly-session', id);
-  }
-  return id;
-}
 
 export function useGameSocket() {
   const setRoom = useGameStore((s) => s.setRoom);
@@ -32,13 +13,7 @@ export function useGameSocket() {
 
   useEffect(() => {
     const sessionId = getSessionId();
-    if (!socket) {
-      socket = io(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:4000', { auth: { token, sessionId } });
-    } else if (socket.auth?.token !== token) {
-      // Logged in/out since the socket first connected — re-handshake as the new identity.
-      socket.auth = { token, sessionId };
-      socket.disconnect().connect();
-    }
+    const socket = getSocket(token);
     const onConnect = () => { setMyId(sessionId); setConnected(true); };
     const onDisconnect = () => setConnected(false);
     if (socket.connected) onConnect();
@@ -58,7 +33,7 @@ export function useGameSocket() {
     };
   }, [setRoom, setMyId, setError, setConnected, token]);
 
-  const emit = (event, payload) => socket?.emit(event, payload);
+  const emit = (event, payload) => getSocket(token).emit(event, payload);
 
   return {
     createRoom: (name) => emit('CREATE_ROOM', { name }),
