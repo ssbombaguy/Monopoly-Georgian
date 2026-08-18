@@ -6,7 +6,7 @@ import { CUSTOM_KEY, CUSTOM_PREFIX, DEFAULT_THEME, STORAGE_KEY, THEME_KEYS } fro
 const sansKa = Noto_Sans_Georgian({ subsets: ['georgian', 'latin'], variable: '--font-sans-ka' });
 const serifKa = Noto_Serif_Georgian({ subsets: ['georgian', 'latin'], variable: '--font-serif-ka' });
 
-export const metadata = { title: 'მონოპოლია — ქართული სუფრის თამაში' };
+export const metadata = { title: 'მონოპოლია — ქართული სამაგიდო თამაში' };
 
 // viewportFit lets the board run under a notch/home indicator; the sticky
 // turn bar pays that back with env(safe-area-inset-*) padding. maximumScale is

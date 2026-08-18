@@ -5,6 +5,7 @@ import { useGameSocket } from '../hooks/useGameSocket';
 
 const NEUTRAL = '#5c5148'; // rails and utilities have no colour group
 const LADDER = ['ქირა', '1 სახლი', '2 სახლი', '3 სახლი', '4 სახლი', 'სასტუმრო'];
+const DARK_GROUPS = new Set(['brown', 'darkblue', 'green', 'red']);
 
 function Row({ label, value, highlight }) {
   return (
@@ -53,7 +54,7 @@ export default function TitleDeed({ index, room, compact = false, onClick }) {
         style={{ background: tile.group ? GROUP_COLORS[tile.group] : NEUTRAL }}
       >
         <div
-          className={`font-bold leading-tight ${compact ? 'text-[10px]' : 'text-xs'} ${tile.group ? 'text-ink' : 'text-white'}`}
+          className={`font-bold leading-tight ${compact ? 'text-[10px]' : 'text-xs'} ${!tile.group || DARK_GROUPS.has(tile.group) ? 'text-white' : 'text-[#1c1917]'}`}
         >
           {tile.name}{mortgaged ? ' · დაგირავებული' : ''}
         </div>

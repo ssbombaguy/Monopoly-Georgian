@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useGameSocket } from '../../hooks/useGameSocket';
 import { useGameStore } from '../../store/gameStore';
 import { useAuthStore } from '../../store/authStore';
@@ -24,9 +25,15 @@ export default function MonopolyLobby() {
   }, [room, router]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-8 p-6">
+    <main className="relative flex min-h-screen flex-col items-center justify-center gap-8 p-6">
+      <Link
+        href="/"
+        className="absolute left-4 top-4 flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-parchment/55 transition hover:bg-[var(--th-panel)] hover:text-parchment/80"
+      >
+        ← მთავარი
+      </Link>
       <div className="text-center">
-        <div className="text-xs uppercase tracking-[0.4em] text-gold/70">ქართული სუფრის თამაში</div>
+        <div className="text-xs uppercase tracking-[0.4em] text-gold/70">ქართული სამაგიდო თამაში</div>
         <h1 className="mt-3 font-display text-4xl font-bold text-parchment sm:text-6xl">მონოპოლია</h1>
         <div className="mx-auto mt-5 h-px w-24 bg-gold/50" />
         <div className="mt-5">

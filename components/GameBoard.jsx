@@ -376,13 +376,21 @@ export default function GameBoard() {
       {/* CENTER — board. Square, so its width is also its height: capped by the
           viewport height on desktop and by the screen width on a phone. */}
       <div
-        className="@container grid aspect-square w-full max-w-[min(86svh,800px)] shrink-0 gap-px rounded-lg border-[max(0.5cqw,3px)] border-[var(--bd-frame)] bg-[var(--bd-frame)] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] outline outline-1 outline-gold/25 lg:min-w-0 lg:max-w-[min(86vh,800px)] lg:flex-1"
+        className="@container grid aspect-square w-full max-w-[min(86svh,800px)] shrink-0 gap-px rounded-lg border-[max(0.5cqw,3px)] border-[var(--bd-frame)] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] outline outline-1 outline-gold/25 lg:min-w-0 lg:max-w-[min(86vh,800px)] lg:flex-1"
         style={{
           // Printed-board proportions: big square corners, narrow edge tiles
           gridTemplateColumns: '1.55fr repeat(9, 1fr) 1.55fr',
           gridTemplateRows: '1.55fr repeat(9, 1fr) 1.55fr',
         }}
       >
+        {/* Frame-colored ring behind the outer tiles only (fills their gap-px
+            lines) — deliberately absent behind the center 9x9 so it stays
+            see-through instead of the grid's own frame color leaking in. */}
+        <div className="pointer-events-none bg-[var(--bd-frame)]" style={{ gridColumn: '1 / 12', gridRow: '1 / 2' }} />
+        <div className="pointer-events-none bg-[var(--bd-frame)]" style={{ gridColumn: '1 / 12', gridRow: '11 / 12' }} />
+        <div className="pointer-events-none bg-[var(--bd-frame)]" style={{ gridColumn: '1 / 2', gridRow: '1 / 12' }} />
+        <div className="pointer-events-none bg-[var(--bd-frame)]" style={{ gridColumn: '11 / 12', gridRow: '1 / 12' }} />
+
         {TILES.map((t, i) => {
           const { row, col } = gridPos(i);
           return (
@@ -399,7 +407,7 @@ export default function GameBoard() {
         })}
 
         {/* Center: board-colored like the real thing, diagonal brand banner */}
-        <div className="relative col-start-2 col-end-11 row-start-2 row-end-11 overflow-hidden bg-[var(--bd-center)]">
+        <div className="relative col-start-2 col-end-11 row-start-2 row-end-11 overflow-hidden bg-transparent">
           {/* paper grain + vignette so the field isn't a flat fill */}
           <div
             className="pointer-events-none absolute inset-0 opacity-50"
@@ -516,9 +524,11 @@ export default function GameBoard() {
               <AuctionBox room={room} me={me} placeBid={placeBid} />
             ) : (
               <>
-                <div className="rounded-full bg-ink/10 px-3 py-1 text-sm text-ink/80">
-                  სვლაა: <span className="font-bold text-ink">{turnPlayer?.name} {turnPlayer?.token}</span>
-                </div>
+                {!isMyTurn && (
+                  <div className="rounded-full bg-ink/10 px-3 py-1 text-sm text-ink/80">
+                    სვლაა: <span className="font-bold text-ink">{turnPlayer?.name} {turnPlayer?.token}</span>
+                  </div>
+                )}
 
                 {inJail && (
                   <div className="rounded-lg border border-violet-500/40 bg-[color-mix(in_srgb,var(--bd-card)_82%,#8b5cf6)] px-3 py-1.5 text-xs text-ink shadow">
